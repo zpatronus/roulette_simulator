@@ -113,8 +113,6 @@
   <button id="fire-button">Fire</button>
 
   <!-- Audio elements -->
-  <audio id="tiktok-music" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/clock_ticking.mp3"
-    preload="auto"></audio>
   <audio id="gunshot-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/gunshot.mp3"
     preload="auto"></audio>
   <audio id="misfire-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/misfire.mp3"
@@ -123,14 +121,13 @@
   <script>
     let bulletChamber = [];
     let currentSlot = 0;
-    let remainingShots = 6; // Initialize the total shots
+    let remainingShots = 6;
     const fireButton = document.getElementById('fire-button');
     const reloadButton = document.getElementById('reload-button');
     const countdownDisplay = document.getElementById('countdown');
     const bulletCountDisplay = document.getElementById('bullet-count');
     const resultDisplay = document.getElementById('result');
 
-    const tiktokMusic = document.getElementById('tiktok-music');
     const gunshotSound = document.getElementById('gunshot-sound');
     const misfireSound = document.getElementById('misfire-sound');
 
@@ -157,29 +154,27 @@
 
       fireButton.disabled = true;
       reloadButton.disabled = true;
+
+      // Determine which sound to play based on bullet position
+      const selectedSound = bulletChamber[currentSlot] ? gunshotSound : misfireSound;
       let countdown = 3;
       countdownDisplay.textContent = countdown;
-      tiktokMusic.play();
 
       const countdownInterval = setInterval(() => {
         countdown--;
         countdownDisplay.textContent = countdown;
         if (countdown <= 0) {
           clearInterval(countdownInterval);
-          tiktokMusic.pause();
-          tiktokMusic.currentTime = 0;
+          selectedSound.play();  // Play the pre-determined sound
 
-          // Check if the current slot has the bullet
           if (bulletChamber[currentSlot]) {
-            gunshotSound.play();
             resultDisplay.textContent = 'Bang! You fired a bullet.';
-            remainingShots = 0; // Set remaining shots to zero after bullet is fired
-            bulletChamber = []; // Empty the chamber after firing the bullet
+            remainingShots = 0;
+            bulletChamber = [];
           } else {
-            misfireSound.play();
             resultDisplay.textContent = 'Click! No bullet fired.';
-            currentSlot = (currentSlot + 1) % 6; // Move to the next slot
-            remainingShots--; // Decrease the remaining shots
+            currentSlot = (currentSlot + 1) % 6;
+            remainingShots--;
           }
 
           fireButton.disabled = false;
