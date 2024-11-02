@@ -40,7 +40,6 @@
       font-style: italic;
     }
 
-    #countdown,
     #bullet-count,
     #result {
       margin-top: 10px;
@@ -101,7 +100,6 @@
         padding: 8px 16px;
       }
 
-      #countdown,
       #bullet-count,
       #result {
         font-size: 1.2em;
@@ -114,7 +112,6 @@
 
   <h1>轮盘模拟器</h1>
   <div id="instructions">调高音量，将手机抵住太阳穴，深呼吸...</div>
-  <div id="countdown"></div>
   <div id="bullet-count">剩余膛室：6</div>
   <div id="result"></div>
   <button id="reload-button">重新装弹</button>
@@ -133,7 +130,6 @@
     let remainingShots = 6;
     const fireButton = document.getElementById('fire-button');
     const reloadButton = document.getElementById('reload-button');
-    const countdownDisplay = document.getElementById('countdown');
     const bulletCountDisplay = document.getElementById('bullet-count');
     const resultDisplay = document.getElementById('result');
 
@@ -142,17 +138,36 @@
     const reloadSound = document.getElementById('reload-sound');
 
     function reloadChamber () {
+      fireButton.disabled = true;
+      reloadButton.disabled = true;
+
       bulletChamber = [false, false, false, false, false, false];
-      const bulletPosition = Math.floor(Math.random() * 6);
-      bulletChamber[bulletPosition] = true;
       currentSlot = 0;
-      remainingShots = 6;
-      bulletCountDisplay.textContent = '剩余膛室：' + remainingShots;
-      resultDisplay.textContent = '';
-      reloadSound.play(); // 播放装弹音效
+      resultDisplay.textContent = '重新装弹中...';
+
+      reloadSound.play().catch((error) => {
+        console.log("Sound play failed due to user interaction restriction:", error);
+        updateAfterReload();
+      });
     }
 
     reloadChamber();
+
+    function updateAfterReload () {
+      remainingShots = 6;
+      bulletCountDisplay.textContent = '剩余膛室：' + remainingShots;
+      resultDisplay.textContent = '装弹完成！';
+      fireButton.disabled = false;
+      reloadButton.disabled = false;
+    }
+
+    reloadSound.addEventListener('ended', updateAfterReload);
+
+    function checkIfFired () {
+      const probability = Math.pow(1 / (6 - currentSlot), 1.3);
+      console.log(probability)
+      return Math.random() <= probability + 1e-4;
+    }
 
     fireButton.addEventListener('click', () => {
       if (remainingShots <= 0) {
@@ -162,23 +177,24 @@
 
       fireButton.disabled = true;
       reloadButton.disabled = true;
-      resultDisplay.textContent = '倒计时...';
 
-      const selectedSound = bulletChamber[currentSlot] ? gunshotSound : misfireSound;
       let countdown = 3;
-      countdownDisplay.textContent = countdown;
-      selectedSound.play();
+      resultDisplay.textContent = `倒计时... ${countdown}`;
 
       const countdownInterval = setInterval(() => {
         countdown--;
-        countdownDisplay.textContent = countdown;
+        resultDisplay.textContent = `倒计时... ${countdown}`;
         if (countdown <= 0) {
           clearInterval(countdownInterval);
         }
       }, 1000);
 
+      const fired = checkIfFired();
+      const selectedSound = fired ? gunshotSound : misfireSound;
+      selectedSound.play();
+
       selectedSound.addEventListener('ended', () => {
-        if (bulletChamber[currentSlot]) {
+        if (fired) {
           resultDisplay.textContent = '砰！命运终结了你...';
           remainingShots = 0;
           bulletChamber = [];
@@ -190,12 +206,12 @@
 
         fireButton.disabled = false;
         reloadButton.disabled = false;
-        countdownDisplay.textContent = '';
         bulletCountDisplay.textContent = `剩余膛室：${remainingShots}`;
       }, { once: true });
     });
 
     reloadButton.addEventListener('click', reloadChamber);
+
   </script>
 </body>
 
