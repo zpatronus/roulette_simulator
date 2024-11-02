@@ -113,10 +113,12 @@
   <button id="fire-button">Fire</button>
 
   <!-- Audio elements -->
-  <audio id="gunshot-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/gunshot.mp3"
+  <audio id="gunshot-sound" src="https://zijuny.dev/gunshot.mp3" preload="auto"></audio>
+  <audio id="misfire-sound" src="https://zijuny.dev/misfire.mp3" preload="auto"></audio>
+  <!-- <audio id="gunshot-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/gunshot.mp3"
     preload="auto"></audio>
   <audio id="misfire-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/misfire.mp3"
-    preload="auto"></audio>
+    preload="auto"></audio> -->
 
   <script>
     let bulletChamber = [];
@@ -146,6 +148,7 @@
     reloadChamber();
 
     // Fire function
+    // Fire function
     fireButton.addEventListener('click', () => {
       if (remainingShots <= 0) {
         resultDisplay.textContent = 'No shots left! Please reload.';
@@ -159,31 +162,36 @@
       const selectedSound = bulletChamber[currentSlot] ? gunshotSound : misfireSound;
       let countdown = 3;
       countdownDisplay.textContent = countdown;
+      selectedSound.play();
 
+      // Countdown interval
       const countdownInterval = setInterval(() => {
         countdown--;
         countdownDisplay.textContent = countdown;
         if (countdown <= 0) {
           clearInterval(countdownInterval);
-          selectedSound.play();  // Play the pre-determined sound
-
-          if (bulletChamber[currentSlot]) {
-            resultDisplay.textContent = 'Bang! You fired a bullet.';
-            remainingShots = 0;
-            bulletChamber = [];
-          } else {
-            resultDisplay.textContent = 'Click! No bullet fired.';
-            currentSlot = (currentSlot + 1) % 6;
-            remainingShots--;
-          }
-
-          fireButton.disabled = false;
-          reloadButton.disabled = false;
-          countdownDisplay.textContent = '';
-          bulletCountDisplay.textContent = `Remaining Shots: ${remainingShots}`;
         }
       }, 1000);
+
+      // Event listener for when the sound stops
+      selectedSound.addEventListener('ended', () => {
+        if (bulletChamber[currentSlot]) {
+          resultDisplay.textContent = 'Bang! You fired a bullet.';
+          remainingShots = 0;
+          bulletChamber = [];
+        } else {
+          resultDisplay.textContent = 'Click! No bullet fired.';
+          currentSlot = (currentSlot + 1) % 6;
+          remainingShots--;
+        }
+
+        fireButton.disabled = false;
+        reloadButton.disabled = false;
+        countdownDisplay.textContent = '';
+        bulletCountDisplay.textContent = `Remaining Shots: ${remainingShots}`;
+      }, { once: true });
     });
+
 
     // Reload event
     reloadButton.addEventListener('click', reloadChamber);
