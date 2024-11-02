@@ -89,7 +89,13 @@
     }
 
     #fire-button {
-      min-height: 300px;
+      min-height: 200px;
+    }
+
+    .checkbox-label {
+      font-size: 1em;
+      margin-top: 10px;
+      color: #ffa500;
     }
 
     @media (max-width: 600px) {
@@ -121,12 +127,16 @@
   <div id="result"></div>
   <button id="reload-button">重新装弹</button>
   <button id="fire-button">扣动扳机</button>
-
-  <!-- New Dice Rolling Section -->
+  <label class="checkbox-label">
+    <input type="checkbox" id="laser-sound-checkbox">
+    将枪声替换成激光枪声：
+  </label>
   <button id="roll-dice-button">摇骰子</button>
   <div id="dice-result"></div>
 
   <audio id="gunshot-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/gunshot.mp3"
+    preload="auto"></audio>
+  <audio id="laser-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/laser.mp3"
     preload="auto"></audio>
   <audio id="misfire-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/misfire.mp3"
     preload="auto"></audio>
@@ -143,8 +153,10 @@
     const reloadButton = document.getElementById('reload-button');
     const bulletCountDisplay = document.getElementById('bullet-count');
     const resultDisplay = document.getElementById('result');
+    const laserCheckbox = document.getElementById('laser-sound-checkbox');
 
     const gunshotSound = document.getElementById('gunshot-sound');
+    const laserSound = document.getElementById('laser-sound');
     const misfireSound = document.getElementById('misfire-sound');
     const reloadSound = document.getElementById('reload-sound');
 
@@ -283,7 +295,8 @@
       }, 1000);
 
       const fired = checkIfFired();
-      const selectedSound = fired ? gunshotSound : misfireSound;
+      const selectedSound = fired ? (laserCheckbox.checked ? laserSound : gunshotSound) : misfireSound;
+
       selectedSound.play();
 
       selectedSound.addEventListener('ended', () => {
