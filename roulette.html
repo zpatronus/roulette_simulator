@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roulette Simulation</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #222;
+      color: #eee;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      color: #ff3333;
+      text-shadow: 1px 1px 5px #ff6666;
+    }
+
+    #countdown,
+    #bullet-count,
+    #result {
+      margin-top: 10px;
+      font-size: 1.5em;
+      word-wrap: break-word;
+      max-width: 100%;
+    }
+
+    #fire-button {
+      font-size: 1.8em;
+      padding: 15px 40px;
+      margin-top: 20px;
+      width: 90%;
+      max-width: 300px;
+      cursor: pointer;
+      min-height: 150px;
+      background-color: #8b0000;
+      color: #fff;
+      border: 2px solid #ff3333;
+      border-radius: 10px;
+      box-shadow: 0px 0px 20px rgba(255, 0, 0, 0.8), inset 0px 0px 10px rgba(0, 0, 0, 0.7);
+      transition: transform 0.1s, box-shadow 0.2s;
+    }
+
+    #fire-button:hover {
+      box-shadow: 0px 0px 25px rgba(255, 0, 0, 1), inset 0px 0px 12px rgba(0, 0, 0, 0.9);
+      transform: scale(1.05);
+    }
+
+    #reload-button {
+      font-size: 1.2em;
+      padding: 10px 20px;
+      margin-top: 15px;
+      cursor: pointer;
+      background-color: #555;
+      color: #eee;
+      border: 2px solid #444;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+
+    #reload-button:hover {
+      background-color: #777;
+    }
+
+    #fire-button {
+      min-height: 300px;
+    }
+
+    @media (max-width: 600px) {
+      #fire-button {
+        font-size: 2em;
+        padding: 15px;
+      }
+
+      #reload-button {
+        font-size: 1em;
+        padding: 8px 16px;
+      }
+
+      #countdown,
+      #bullet-count,
+      #result {
+        font-size: 1.2em;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Roulette Simulation</h1>
+  <div id="countdown"></div>
+  <div id="bullet-count">Remaining Shots: 6</div>
+  <div id="result"></div>
+  <button id="reload-button">Reload</button>
+  <button id="fire-button">Fire</button>
+
+  <!-- Audio elements -->
+  <audio id="tiktok-music" src="clock_ticking.mp3"></audio>
+  <audio id="gunshot-sound" src="gunshot.mp3"></audio>
+  <audio id="misfire-sound" src="misfire.mp3"></audio>
+
+  <script>
+    let bulletChamber = [];
+    let currentSlot = 0;
+    let remainingShots = 6; // Initialize the total shots
+    const fireButton = document.getElementById('fire-button');
+    const reloadButton = document.getElementById('reload-button');
+    const countdownDisplay = document.getElementById('countdown');
+    const bulletCountDisplay = document.getElementById('bullet-count');
+    const resultDisplay = document.getElementById('result');
+
+    const tiktokMusic = document.getElementById('tiktok-music');
+    const gunshotSound = document.getElementById('gunshot-sound');
+    const misfireSound = document.getElementById('misfire-sound');
+
+    // Reload function to reset the chamber with one bullet in a random slot
+    function reloadChamber () {
+      bulletChamber = [false, false, false, false, false, false];
+      const bulletPosition = Math.floor(Math.random() * 6);
+      bulletChamber[bulletPosition] = true;
+      currentSlot = 0;
+      remainingShots = 6;
+      bulletCountDisplay.textContent = 'Remaining Shots: ' + remainingShots;
+      resultDisplay.textContent = '';
+    }
+
+    // Initialize chamber on load
+    reloadChamber();
+
+    // Fire function
+    fireButton.addEventListener('click', () => {
+      if (remainingShots <= 0) {
+        resultDisplay.textContent = 'No shots left! Please reload.';
+        return;
+      }
+
+      fireButton.disabled = true;
+      reloadButton.disabled = true;
+      let countdown = 3;
+      countdownDisplay.textContent = countdown;
+      tiktokMusic.play();
+
+      const countdownInterval = setInterval(() => {
+        countdown--;
+        countdownDisplay.textContent = countdown;
+        if (countdown <= 0) {
+          clearInterval(countdownInterval);
+          tiktokMusic.pause();
+          tiktokMusic.currentTime = 0;
+
+          // Check if the current slot has the bullet
+          if (bulletChamber[currentSlot]) {
+            gunshotSound.play();
+            resultDisplay.textContent = 'Bang! You fired a bullet.';
+            remainingShots = 0; // Set remaining shots to zero after bullet is fired
+            bulletChamber = []; // Empty the chamber after firing the bullet
+          } else {
+            misfireSound.play();
+            resultDisplay.textContent = 'Click! No bullet fired.';
+            currentSlot = (currentSlot + 1) % 6; // Move to the next slot
+            remainingShots--; // Decrease the remaining shots
+          }
+
+          fireButton.disabled = false;
+          reloadButton.disabled = false;
+          countdownDisplay.textContent = '';
+          bulletCountDisplay.textContent = `Remaining Shots: ${remainingShots}`;
+        }
+      }, 1000);
+    });
+
+    // Reload event
+    reloadButton.addEventListener('click', reloadChamber);
+  </script>
+</body>
+
+</html>
