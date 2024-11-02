@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roulette Simulation</title>
+  <title>轮盘模拟器</title>
   <style>
     * {
       box-sizing: border-box;
@@ -31,6 +31,13 @@
       margin-bottom: 20px;
       color: #ff3333;
       text-shadow: 1px 1px 5px #ff6666;
+    }
+
+    #instructions {
+      margin-bottom: 20px;
+      font-size: 1.1em;
+      color: #ffa500;
+      font-style: italic;
     }
 
     #countdown,
@@ -105,16 +112,14 @@
 
 <body>
 
-  <h1>Roulette Simulation</h1>
+  <h1>轮盘模拟器</h1>
+  <div id="instructions">调高音量，将手机靠近太阳穴，深呼吸...</div>
   <div id="countdown"></div>
-  <div id="bullet-count">Remaining Shots: 6</div>
+  <div id="bullet-count">剩余子弹：6</div>
   <div id="result"></div>
-  <button id="reload-button">Reload</button>
-  <button id="fire-button">Fire</button>
+  <button id="reload-button">重新装弹</button>
+  <button id="fire-button">扣动扳机</button>
 
-  <!-- Audio elements -->
-  <!-- <audio id="gunshot-sound" src="https://zijuny.dev/gunshot.mp3" preload="auto"></audio>
-  <audio id="misfire-sound" src="https://zijuny.dev/misfire.mp3" preload="auto"></audio> -->
   <audio id="gunshot-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/gunshot.mp3"
     preload="auto"></audio>
   <audio id="misfire-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/misfire.mp3"
@@ -133,39 +138,33 @@
     const gunshotSound = document.getElementById('gunshot-sound');
     const misfireSound = document.getElementById('misfire-sound');
 
-    // Reload function to reset the chamber with one bullet in a random slot
     function reloadChamber () {
       bulletChamber = [false, false, false, false, false, false];
       const bulletPosition = Math.floor(Math.random() * 6);
       bulletChamber[bulletPosition] = true;
       currentSlot = 0;
       remainingShots = 6;
-      bulletCountDisplay.textContent = 'Remaining Shots: ' + remainingShots;
+      bulletCountDisplay.textContent = '剩余子弹：' + remainingShots;
       resultDisplay.textContent = '';
     }
 
-    // Initialize chamber on load
     reloadChamber();
 
-    // Fire function
-    // Fire function
     fireButton.addEventListener('click', () => {
       if (remainingShots <= 0) {
-        resultDisplay.textContent = 'No shots left! Please reload.';
+        resultDisplay.textContent = '没有子弹了，准备上膛吧。';
         return;
       }
 
       fireButton.disabled = true;
       reloadButton.disabled = true;
-      resultDisplay.textContent = 'Waiting ...';
+      resultDisplay.textContent = '倒计时...';
 
-      // Determine which sound to play based on bullet position
       const selectedSound = bulletChamber[currentSlot] ? gunshotSound : misfireSound;
       let countdown = 3;
       countdownDisplay.textContent = countdown;
       selectedSound.play();
 
-      // Countdown interval
       const countdownInterval = setInterval(() => {
         countdown--;
         countdownDisplay.textContent = countdown;
@@ -174,14 +173,13 @@
         }
       }, 1000);
 
-      // Event listener for when the sound stops
       selectedSound.addEventListener('ended', () => {
         if (bulletChamber[currentSlot]) {
-          resultDisplay.textContent = 'Bang! You fired a bullet.';
+          resultDisplay.textContent = '砰！命运终结了你...';
           remainingShots = 0;
           bulletChamber = [];
         } else {
-          resultDisplay.textContent = 'Click! No bullet fired.';
+          resultDisplay.textContent = '呼...暂时活了下来。空包弹。';
           currentSlot = (currentSlot + 1) % 6;
           remainingShots--;
         }
@@ -189,12 +187,10 @@
         fireButton.disabled = false;
         reloadButton.disabled = false;
         countdownDisplay.textContent = '';
-        bulletCountDisplay.textContent = `Remaining Shots: ${remainingShots}`;
+        bulletCountDisplay.textContent = `剩余子弹：${remainingShots}`;
       }, { once: true });
     });
 
-
-    // Reload event
     reloadButton.addEventListener('click', reloadChamber);
   </script>
 </body>
