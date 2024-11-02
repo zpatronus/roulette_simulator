@@ -157,6 +157,7 @@
 
       fireButton.disabled = true;
       reloadButton.disabled = true;
+      resultDisplay.textContent = 'Waiting ...';
 
       // Determine which sound to play based on bullet position
       const selectedSound = bulletChamber[currentSlot] ? gunshotSound : misfireSound;
