@@ -124,6 +124,8 @@
     preload="auto"></audio>
   <audio id="misfire-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/misfire.mp3"
     preload="auto"></audio>
+  <audio id="reload-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/reload.mp3"
+    preload="auto"></audio>
 
   <script>
     let bulletChamber = [];
@@ -137,6 +139,7 @@
 
     const gunshotSound = document.getElementById('gunshot-sound');
     const misfireSound = document.getElementById('misfire-sound');
+    const reloadSound = document.getElementById('reload-sound');
 
     function reloadChamber () {
       bulletChamber = [false, false, false, false, false, false];
@@ -146,6 +149,7 @@
       remainingShots = 6;
       bulletCountDisplay.textContent = '剩余膛室：' + remainingShots;
       resultDisplay.textContent = '';
+      reloadSound.play(); // 播放装弹音效
     }
 
     reloadChamber();
