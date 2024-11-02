@@ -124,8 +124,7 @@
   <audio id="reload-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/reload.mp3"
     preload="auto"></audio>
 
-  <script>
-    let bulletChamber = [];
+  <script>let bulletChamber = [];
     let currentSlot = 0;
     let remainingShots = 6;
     const fireButton = document.getElementById('fire-button');
@@ -136,6 +135,89 @@
     const gunshotSound = document.getElementById('gunshot-sound');
     const misfireSound = document.getElementById('misfire-sound');
     const reloadSound = document.getElementById('reload-sound');
+
+    const survivalMessages = [
+      [
+        "呼...暂时活了下来。看来运气不错，继续！",
+        "空包弹！还好还活着。",
+        "第一发就躲过去了，虚惊一场！",
+        "还好没事，安全躲过第一发。",
+        "命大，第一发幸免于难。"
+      ],
+      [
+        "又躲过一劫，看来运气还不错！",
+        "还活着！第二发也躲过去了。",
+        "再次幸免，真是惊险！",
+        "第二发也没事，侥幸逃生。",
+        "又一次躲过了空包弹，继续前进！"
+      ],
+      [
+        "第三次也躲过了，越来越不可思议了！",
+        "手心冒汗，但我还活着！",
+        "又活下来了，这已经开始让人怀疑命运了。",
+        "第三发也逃过，真是命大！",
+        "还能躲过？感觉越来越惊险了..."
+      ],
+      [
+        "第四发也没击中！太不可思议了！",
+        "命运似乎在眷顾我，第四次逃生成功。",
+        "奇迹！第四发也躲过了。",
+        "四发过后，我居然还活着！",
+        "心跳加速，第四次居然又逃过一劫！"
+      ],
+      [
+        "第五发...我还活着，这真是奇迹中的奇迹！",
+        "第五次还活着，难以置信！",
+        "再次躲过一劫，命运真的是在开玩笑吗？",
+        "第五次侥幸逃生，心跳停不下来了！",
+        "又一次奇迹般活了下来，这怎么可能？！"
+      ]
+    ];
+
+    const shotMessages = [
+      [
+        "第一发就中弹了！运气真背！",
+        "刚开始就被击中，真是天要亡我！",
+        "第一枪就结束了？不敢相信！",
+        "一发入魂，命运竟然如此无情。",
+        "才刚开始，这一枪竟然直接中弹！"
+      ],
+      [
+        "第二次尝试就中弹，命运真残酷。",
+        "才试第二发，就直接中弹了！",
+        "才第二枪，居然真被击中，难逃一劫！",
+        "第二发就中了，看来今天无路可逃。",
+        "第二次开枪便是中弹，命运难测。"
+      ],
+      [
+        "第三次尝试还是逃不过，这就是命吧。",
+        "命运无情，第三发让我中弹了。",
+        "我感觉到不祥，这一枪果然中弹。",
+        "还以为能撑过去，结果还是中弹了。",
+        "第三次开枪直接中弹，无法挣脱命运。"
+      ],
+      [
+        "第四发中弹，似乎已无力挣扎。",
+        "真是难逃一劫，第四发直接中弹。",
+        "再怎么挣扎，终究被命运捉弄。",
+        "第四次了，依然难逃中弹的命运。",
+        "这一枪让我彻底明白，命运无法抗拒。"
+      ],
+      [
+        "第五发还是中弹，奇迹终究未发生。",
+        "五发之中终究中弹，已无力再抗争。",
+        "还以为第五发能逃过，结果却迎来命运的审判。",
+        "第五次开枪，命运直接宣告结束。",
+        "中弹了，心中已无波澜，接受这一切。"
+      ],
+      [
+        "第六次，命运终点，中弹已是注定。",
+        "终于到了最后一发，命运无可逃避。",
+        "最后一枪，命中注定的中弹结局。",
+        "一切在此刻结束，中弹已无法避免。",
+        "第六次开枪...这就是命运的最终安排。"
+      ]
+    ];
 
     function reloadChamber () {
       fireButton.disabled = true;
@@ -165,7 +247,6 @@
 
     function checkIfFired () {
       const probability = Math.pow(1 / (6 - currentSlot), 1.3);
-      console.log(probability)
       return Math.random() <= probability + 1e-4;
     }
 
@@ -195,11 +276,13 @@
 
       selectedSound.addEventListener('ended', () => {
         if (fired) {
-          resultDisplay.textContent = '砰！命运终结了你...';
+          const shotMessage = shotMessages[currentSlot][Math.floor(Math.random() * shotMessages[currentSlot].length)];
+          resultDisplay.textContent = shotMessage;
           remainingShots = 0;
           bulletChamber = [];
         } else {
-          resultDisplay.textContent = '呼...暂时活了下来。空包弹。';
+          const survivalMessage = survivalMessages[currentSlot][Math.floor(Math.random() * survivalMessages[currentSlot].length)];
+          resultDisplay.textContent = survivalMessage;
           currentSlot = (currentSlot + 1) % 6;
           remainingShots--;
         }
