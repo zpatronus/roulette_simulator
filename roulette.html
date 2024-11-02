@@ -115,7 +115,7 @@
   <h1>轮盘模拟器</h1>
   <div id="instructions">调高音量，将手机抵住太阳穴，深呼吸...</div>
   <div id="countdown"></div>
-  <div id="bullet-count">剩余子弹：6</div>
+  <div id="bullet-count">剩余膛室：6</div>
   <div id="result"></div>
   <button id="reload-button">重新装弹</button>
   <button id="fire-button">扣动扳机</button>
@@ -144,7 +144,7 @@
       bulletChamber[bulletPosition] = true;
       currentSlot = 0;
       remainingShots = 6;
-      bulletCountDisplay.textContent = '剩余子弹：' + remainingShots;
+      bulletCountDisplay.textContent = '剩余膛室：' + remainingShots;
       resultDisplay.textContent = '';
     }
 
@@ -187,7 +187,7 @@
         fireButton.disabled = false;
         reloadButton.disabled = false;
         countdownDisplay.textContent = '';
-        bulletCountDisplay.textContent = `剩余子弹：${remainingShots}`;
+        bulletCountDisplay.textContent = `剩余膛室：${remainingShots}`;
       }, { once: true });
     });
 
