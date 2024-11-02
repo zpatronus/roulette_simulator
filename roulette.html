@@ -41,7 +41,8 @@
     }
 
     #bullet-count,
-    #result {
+    #result,
+    #dice-result {
       margin-top: 10px;
       font-size: 1.5em;
       word-wrap: break-word;
@@ -69,7 +70,8 @@
       transform: scale(1.05);
     }
 
-    #reload-button {
+    #reload-button,
+    #roll-dice-button {
       font-size: 1.2em;
       padding: 10px 20px;
       margin-top: 15px;
@@ -81,7 +83,8 @@
       transition: background-color 0.3s;
     }
 
-    #reload-button:hover {
+    #reload-button:hover,
+    #roll-dice-button:hover {
       background-color: #777;
     }
 
@@ -95,13 +98,15 @@
         padding: 15px;
       }
 
-      #reload-button {
+      #reload-button,
+      #roll-dice-button {
         font-size: 1em;
         padding: 8px 16px;
       }
 
       #bullet-count,
-      #result {
+      #result,
+      #dice-result {
         font-size: 1.2em;
       }
     }
@@ -117,12 +122,19 @@
   <button id="reload-button">重新装弹</button>
   <button id="fire-button">扣动扳机</button>
 
+  <!-- New Dice Rolling Section -->
+  <button id="roll-dice-button">摇骰子</button>
+  <div id="dice-result"></div>
+
   <audio id="gunshot-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/gunshot.mp3"
     preload="auto"></audio>
   <audio id="misfire-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/misfire.mp3"
     preload="auto"></audio>
   <audio id="reload-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/reload.mp3"
     preload="auto"></audio>
+  <audio id="dice-sound" src="https://github.com/zpatronus/roulette_simulator/raw/refs/heads/main/dice.mp3"
+    preload="auto"></audio>
+
 
   <script>let bulletChamber = [];
     let currentSlot = 0;
@@ -294,6 +306,33 @@
     });
 
     reloadButton.addEventListener('click', reloadChamber);
+
+    function rollDice () {
+      const diceSound = document.getElementById('dice-sound');
+      const diceResultDisplay = document.getElementById('dice-result');
+      const rollDiceButton = document.getElementById('roll-dice-button');
+
+      rollDiceButton.disabled = true;
+
+      diceSound.play().catch(error => console.log("Sound play failed:", error));
+
+      diceSound.addEventListener('ended', () => {
+        const diceRolls = Array.from({ length: 5 }, () => Math.floor(Math.random() * 6) + 1);
+        diceRolls.sort((a, b) => a - b);
+        const timestamp = new Date().toLocaleTimeString();
+        diceResultDisplay.textContent = `骰子结果: ${diceRolls.join(', ')} @ ${timestamp}`;
+
+        rollDiceButton.disabled = false;
+      }, { once: true });
+    }
+
+    document.getElementById('roll-dice-button').addEventListener('click', rollDice);
+
+
+
+    rollDice();
+
+
 
   </script>
 </body>
