@@ -314,20 +314,27 @@
 
       rollDiceButton.disabled = true;
 
-      diceSound.play().catch(error => console.log("Sound play failed:", error));
+      diceResultDisplay.textContent = '投掷中...'
 
-      diceSound.addEventListener('ended', () => {
+      function displayDiceResult () {
         const diceRolls = Array.from({ length: 5 }, () => Math.floor(Math.random() * 6) + 1);
         diceRolls.sort((a, b) => a - b);
         const timestamp = new Date().toLocaleTimeString();
         diceResultDisplay.textContent = `骰子结果: ${diceRolls.join(', ')} @ ${timestamp}`;
-
         rollDiceButton.disabled = false;
-      }, { once: true });
+      }
+
+      diceSound.play()
+        .then(() => {
+          diceSound.addEventListener('ended', displayDiceResult, { once: true });
+        })
+        .catch((error) => {
+          console.log("Sound play failed:", error);
+          displayDiceResult();
+        });
     }
 
     document.getElementById('roll-dice-button').addEventListener('click', rollDice);
-
 
 
     rollDice();
